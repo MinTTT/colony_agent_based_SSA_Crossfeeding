@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="fulabserver.qblab.bio" id="0ca1ca46-276d-4627-9977-6270104a0a15" port="22" nameFormat="DESCRIPTIVE" username="fulab" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>

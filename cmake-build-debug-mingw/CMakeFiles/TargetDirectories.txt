@@ -1,0 +1,3 @@
+D:/python_code/colony_agent_based_SSA_Crossfeeding/cmake-build-debug-mingw/CMakeFiles/colony_agent_based_SSA.dir
+D:/python_code/colony_agent_based_SSA_Crossfeeding/cmake-build-debug-mingw/CMakeFiles/edit_cache.dir
+D:/python_code/colony_agent_based_SSA_Crossfeeding/cmake-build-debug-mingw/CMakeFiles/rebuild_cache.dir
