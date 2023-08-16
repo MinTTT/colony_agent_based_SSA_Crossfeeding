@@ -32,3 +32,7 @@
 *.app
 .idea
 .vscode
+
+cmake-build-debug-mingw
+cmake-build-debug
+.history

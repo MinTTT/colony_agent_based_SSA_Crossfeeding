@@ -91,11 +91,10 @@ int UpdateEnvArray(Array3D<LocalEnv>* CurrentColony, Array3D<LocalEnv>* Previous
                             UpdateEnvironment(CurrentColony, PreviousColony, PreviousWall[0], DensityShiftP, Density1ShiftP, Density2ShiftP,WallDensityShiftP,positionColony,insideColonyDen);
                         }
 
-                        // check convergence criteria for this grid point
+                        // check convergence criteria for this grid point. |delta Carbon| <= ConvCrit * |Carbon|
                         if (fabs(CurrentColony->Get(positionColony).Carbon - previousCarbon) > ConvCrit * fabs(CurrentColony->Get(positionColony).Carbon)){
                             conv +=1;
                         }
-//                        conv += int(fabs(CurrentColony->Get(positionColony).Carbon - previousCarbon) > ConvCrit*fabs(CurrentColony->Get(positionColony).Carbon) );
                     }
                 }
             }
