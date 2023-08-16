@@ -184,10 +184,23 @@ void UpdateEnvironment(Array3D<LocalEnv>* Env, Array3D<LocalEnv>* prevEnv, Array
         double fC = C/(C+KC);	// carbon transporter rate
 
         double Cgr=0.;; // redistribute C to vertices, in order to compute growth rate
+//        double C_a_p = 0.;
+//        double C_a_xy_m1 = 0.;
+//        double C_a_x_m1 = 0.;
+//        double C_a_y_m1 = 0.;
+//        double C_e_p = 0.;
+//        double C_e_xy_m1 = 0.;
+//        double C_e_x_m1 = 0.;
+//        double C_e_y_m1 = 0.;
+
         if (position.x!=0 && position.y!=0)
         {
+
+
             if (position.z==0)
             {
+
+
                 Cgr=(prevWal->Get(position.x-1,position.y-1).CarbonAgar+prevEnv->Get(position.x-1,position.y-1,position.z).Carbon
                      +prevWal->Get(position.x-1,position.y).CarbonAgar+prevEnv->Get(position.x-1,position.y,position.z).Carbon
                      +prevWal->Get(position.x,position.y-1).CarbonAgar+prevEnv->Get(position.x,position.y-1,position.z).Carbon
@@ -213,7 +226,7 @@ void UpdateEnvironment(Array3D<LocalEnv>* Env, Array3D<LocalEnv>* prevEnv, Array
         // second derivatives of C
         double Cxx, Cyy, Czz;
 
-        MyAssert(position.x>2,"Need more boxes");
+        MyAssert(position.x>2,"Nutrients update error, Need more boxes");
 
         // if we're at the bottom boundary
         if (position.z==0){
