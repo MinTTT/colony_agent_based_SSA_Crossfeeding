@@ -34,8 +34,7 @@ struct LocalEnv
        GrowthRate = _growthrate;
     }
 
-    LocalEnv()
-    {
+    LocalEnv(){
         Carbon = 0.0;
         Oxygen = 0.0;
         Waste = 0.0;

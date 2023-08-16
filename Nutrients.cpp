@@ -184,8 +184,19 @@ void UpdateEnvironment(Array3D<LocalEnv>* Env, Array3D<LocalEnv>* prevEnv, Array
         double fC = C/(C+KC);	// carbon transporter rate
 
         double Cgr=0.;; // redistribute C to vertices, in order to compute growth rate
+//        double C_a_p = 0.;
+//        double C_a_xy_m1 = 0.;
+//        double C_a_x_m1 = 0.;
+//        double C_a_y_m1 = 0.;
+//        double C_e_p = 0.;
+//        double C_e_xy_m1 = 0.;
+//        double C_e_x_m1 = 0.;
+//        double C_e_y_m1 = 0.;
+
         if (position.x!=0 && position.y!=0)
         {
+
+            // average of Carbon concentration.
             if (position.z==0)
             {
                 Cgr=(prevWal->Get(position.x-1,position.y-1).CarbonAgar+prevEnv->Get(position.x-1,position.y-1,position.z).Carbon
@@ -201,36 +212,44 @@ void UpdateEnvironment(Array3D<LocalEnv>* Env, Array3D<LocalEnv>* prevEnv, Array
             }
         }
 
+        // calculate local growth rate
         double fCgr = Cgr/(Cgr+KC);
-
         double qC, GR;
-
         qC = C_rate*fC;	// carbon consumption rate
         GR = maxGrowthRate*max(0.0,fCgr-Maintenance_rate/C_rate);
-
         Env->At(position).GrowthRate = GR;
 
         // second derivatives of C
         double Cxx, Cyy, Czz;
 
-        MyAssert(position.x>2,"Need more boxes");
+        MyAssert(position.x>2,"Nutrients update error, Need more boxes");
 
-        // if we're at the bottom boundary
-        if (position.z==0){
-            Czz = (prevEnv->Get(position.x,position.y,position.z+1).Carbon + prevWal->Get(position.x,position.y).CarbonAgar - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)/(BoxLength*BoxLength);
+        // treat the boundary between colony and agar surface.
+        if (position.z==0){ // if we're at the bottom boundary
+            Czz = (prevEnv->Get(position.x,position.y,position.z+1).Carbon
+                    + prevWal->Get(position.x,position.y).CarbonAgar
+                    - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)
+                            /(BoxLength*BoxLength);
         }else{
-            Czz = (prevEnv->Get(position.x,position.y,position.z+1).Carbon + prevEnv->Get(position.x,position.y,position.z-1).Carbon - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)/(BoxLength*BoxLength);
+            Czz = (prevEnv->Get(position.x,position.y,position.z+1).Carbon
+                    + prevEnv->Get(position.x,position.y,position.z-1).Carbon
+                    - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)
+                            /(BoxLength*BoxLength);
         }
 
-        Cxx = (prevEnv->Get(position.x+1,position.y,position.z).Carbon + prevEnv->Get(position.x-1,position.y,position.z).Carbon - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)/(BoxLength*BoxLength);
+        Cxx = (prevEnv->Get(position.x+1,position.y,position.z).Carbon
+                + prevEnv->Get(position.x-1,position.y,position.z).Carbon
+                - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)
+                        /(BoxLength*BoxLength);
 
-        Cyy = (prevEnv->Get(position.x,position.y+1,position.z).Carbon + prevEnv->Get(position.x,position.y-1,position.z).Carbon - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)/(BoxLength*BoxLength);
+        Cyy = (prevEnv->Get(position.x,position.y+1,position.z).Carbon
+                + prevEnv->Get(position.x,position.y-1,position.z).Carbon
+                - 2.0*prevEnv->Get(position.x,position.y,position.z).Carbon)
+                        /(BoxLength*BoxLength);
 
         // Calculate new C concentration
         double Cnew;
-
         Cnew = prevEnv->Get(position).Carbon + (DiffColony*(Cxx + Cyy + Czz ) - qC)*Cdt;//*DensityShiftP.Get(position))*Cdt;
-
         Env->At(position).Carbon = max(0.0,min(Cnew,maxCarbon));	// for stability
         if (NutrientGSI==1){
             prevEnv->At(position).Carbon = max(0.0,min(Cnew,maxCarbon));	// for stability
@@ -244,7 +263,18 @@ void UpdateEnvironment(Array3D<LocalEnv>* Env, Array3D<LocalEnv>* prevEnv, Array
         int iy = position.y;
         int iz = position.z;
 
-        double Cnew = (prevEnv->Get(ix+1,iy,iz).Carbon*(insideColonyDen.Get(ix+1,iy,iz)>0.5)+prevEnv->Get(ix-1,iy,iz).Carbon*(insideColonyDen.Get(ix-1,iy,iz)>0.5)+prevEnv->Get(ix,iy+1,iz).Carbon*(insideColonyDen.Get(ix,iy+1,iz)>0.5)+prevEnv->Get(ix,iy-1,iz).Carbon*(insideColonyDen.Get(ix,iy-1,iz)>0.5)+prevEnv->Get(ix,iy,iz+1).Carbon*(insideColonyDen.Get(ix,iy,iz+1)>0.5)+prevEnv->Get(ix,iy,iz-1).Carbon*(insideColonyDen.Get(ix,iy,iz-1)>0.5))/((insideColonyDen.Get(ix+1,iy,iz)>0.5)+(insideColonyDen.Get(ix-1,iy,iz)>0.5)+(insideColonyDen.Get(ix,iy+1,iz)>0.5)+(insideColonyDen.Get(ix,iy-1,iz)>0.5)+(insideColonyDen.Get(ix,iy,iz+1)>0.5)+(insideColonyDen.Get(ix,iy,iz-1)>0.5));
+        double Cnew = (prevEnv->Get(ix+1,iy,iz).Carbon*(insideColonyDen.Get(ix+1,iy,iz)>0.5)
+                    +prevEnv->Get(ix-1,iy,iz).Carbon*(insideColonyDen.Get(ix-1,iy,iz)>0.5)
+                    +prevEnv->Get(ix,iy+1,iz).Carbon*(insideColonyDen.Get(ix,iy+1,iz)>0.5)
+                    +prevEnv->Get(ix,iy-1,iz).Carbon*(insideColonyDen.Get(ix,iy-1,iz)>0.5)
+                    +prevEnv->Get(ix,iy,iz+1).Carbon*(insideColonyDen.Get(ix,iy,iz+1)>0.5)
+                    +prevEnv->Get(ix,iy,iz-1).Carbon*(insideColonyDen.Get(ix,iy,iz-1)>0.5))
+                            /((insideColonyDen.Get(ix+1,iy,iz)>0.5)
+                            +(insideColonyDen.Get(ix-1,iy,iz)>0.5)
+                            +(insideColonyDen.Get(ix,iy+1,iz)>0.5)
+                            +(insideColonyDen.Get(ix,iy-1,iz)>0.5)
+                            +(insideColonyDen.Get(ix,iy,iz+1)>0.5)
+                            +(insideColonyDen.Get(ix,iy,iz-1)>0.5));
 
         Env->At(position).Carbon = max(0.0,min(Cnew, maxCarbon));
         if (NutrientGSI==1)
@@ -258,7 +288,16 @@ void UpdateEnvironment(Array3D<LocalEnv>* Env, Array3D<LocalEnv>* prevEnv, Array
         int iy = position.y;
         int iz = position.z;
 
-        double Cnew = (prevEnv->Get(ix+1,iy,iz).Carbon*(insideColonyDen.Get(ix+1,iy,iz)>0.5)+prevEnv->Get(ix-1,iy,iz).Carbon*(insideColonyDen.Get(ix-1,iy,iz)>0.5)+prevEnv->Get(ix,iy+1,iz).Carbon*(insideColonyDen.Get(ix,iy+1,iz)>0.5)+prevEnv->Get(ix,iy-1,iz).Carbon*(insideColonyDen.Get(ix,iy-1,iz)>0.5)+prevEnv->Get(ix,iy,iz+1).Carbon*(insideColonyDen.Get(ix,iy,iz+1)>0.5))/((insideColonyDen.Get(ix+1,iy,iz)>0.5)+(insideColonyDen.Get(ix-1,iy,iz)>0.5)+(insideColonyDen.Get(ix,iy+1,iz)>0.5)+(insideColonyDen.Get(ix,iy-1,iz)>0.5)+(insideColonyDen.Get(ix,iy,iz+1)>0.5));
+        double Cnew = (prevEnv->Get(ix+1,iy,iz).Carbon*(insideColonyDen.Get(ix+1,iy,iz)>0.5)
+                +prevEnv->Get(ix-1,iy,iz).Carbon*(insideColonyDen.Get(ix-1,iy,iz)>0.5)
+                +prevEnv->Get(ix,iy+1,iz).Carbon*(insideColonyDen.Get(ix,iy+1,iz)>0.5)
+                +prevEnv->Get(ix,iy-1,iz).Carbon*(insideColonyDen.Get(ix,iy-1,iz)>0.5)
+                +prevEnv->Get(ix,iy,iz+1).Carbon*(insideColonyDen.Get(ix,iy,iz+1)>0.5))
+                        /((insideColonyDen.Get(ix+1,iy,iz)>0.5)
+                        +(insideColonyDen.Get(ix-1,iy,iz)>0.5)
+                        +(insideColonyDen.Get(ix,iy+1,iz)>0.5)
+                        +(insideColonyDen.Get(ix,iy-1,iz)>0.5)
+                        +(insideColonyDen.Get(ix,iy,iz+1)>0.5));
 
         Env->At(position).Carbon = max(0.0,min(Cnew, maxCarbon));
         if (NutrientGSI==1)
