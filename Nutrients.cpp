@@ -199,6 +199,8 @@ void UpdateEnvironment(Array3D<LocalEnv>* Env, Array3D<LocalEnv>* prevEnv, Array
             // average of Carbon concentration.
             if (position.z==0)
             {
+
+
                 Cgr=(prevWal->Get(position.x-1,position.y-1).CarbonAgar+prevEnv->Get(position.x-1,position.y-1,position.z).Carbon
                      +prevWal->Get(position.x-1,position.y).CarbonAgar+prevEnv->Get(position.x-1,position.y,position.z).Carbon
                      +prevWal->Get(position.x,position.y-1).CarbonAgar+prevEnv->Get(position.x,position.y-1,position.z).Carbon
